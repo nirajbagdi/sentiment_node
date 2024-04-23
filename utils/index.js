@@ -1,4 +1,5 @@
 import fs from "fs";
+import translate from "@iamtraction/google-translate";
 import { createObjectCsvWriter } from "csv-writer";
 
 export function convertJsonToCsv(jsonObject, csvFilePath, fields) {
@@ -19,4 +20,10 @@ export function saveJsonToFile(jsonObject, filePath) {
 	fs.writeFileSync(filePath, jsonData, "utf8");
 
 	console.log(`JSON data has been saved to ${filePath}`);
+}
+
+export async function backTranslateText(text) {
+	const translatedText = await translate(text, { from: "en", to: "hi" });
+	const backTranslatedText = await translate(translatedText.text, { from: "hi", to: "en" });
+	return backTranslatedText.text;
 }

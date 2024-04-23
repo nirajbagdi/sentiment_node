@@ -1,5 +1,7 @@
 import puppeteer from "puppeteer";
 
+import { backTranslateText } from "./index.js";
+
 export const fetchTOIData = async requestObj => {
 	let browser = null;
 
@@ -35,9 +37,12 @@ export const fetchTOIData = async requestObj => {
 
 			const [publisher, publishedDate] = metadata.split(" / ");
 
+			const augmentedHeadline = await backTranslateText(headline);
+
 			return {
 				source: "TOI",
 				headline: headline.trim(),
+				augmentedHeadline: augmentedHeadline.trim(),
 				publisher: publisher?.trim() ?? "",
 				publishedDate: publishedDate?.trim() ?? "",
 				summary: summary.trim(),
@@ -92,9 +97,12 @@ export const fetchNDTVData = async requestObj => {
 
 			const [category, publisher, publishedDate] = metadata.split(" | ");
 
+			const augmentedHeadline = await backTranslateText(headline);
+
 			return {
 				source: "NDTV",
 				category: category.trim() ?? "",
+				augmentedHeadline: augmentedHeadline.trim(),
 				headline: headline.trim(),
 				summary: summary.trim(),
 				publisher: publisher?.trim() ?? "",
@@ -149,10 +157,13 @@ export const fetchCNBCData = async requestObj => {
 			const publishedDate = await getJSONText(".SearchResult-publishedDate", result);
 			const articleLink = await result.$eval("a[href]", el => el.getAttribute("href"));
 
+			const augmentedHeadline = await backTranslateText(headline);
+
 			return {
 				source: "CNBC",
 				category: category.trim(),
 				headline: headline.trim(),
+				augmentedHeadline: augmentedHeadline.trim(),
 				summary: summary.trim(),
 				publisher: metadata.trim().split("  ")[0].trim(),
 				publishedDate: publishedDate.trim(),
@@ -200,9 +211,12 @@ export const fetchGNewsData = async requestObj => {
 			const headline = await getJSONText("a.JtKRv", result);
 			const articleLink = await result.$eval("a.JtKRv", el => el.getAttribute("href"));
 
+			const augmentedHeadline = await backTranslateText(headline);
+
 			return {
 				source: "GNews",
 				headline: headline.trim(),
+				augmentedHeadline: augmentedHeadline.trim(),
 				articleLink,
 			};
 		});
